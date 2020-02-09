@@ -1,12 +1,9 @@
 package com.kczechowski.stackclone.entities;
 
 import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import java.util.List;
+import javax.persistence.*;
+
 import lombok.Data;
 
 @Data
@@ -23,5 +20,7 @@ public class Tag implements Serializable {
   @Column(name = "name")
   private String name;
 
-  
+  @ManyToMany(mappedBy = "tags")
+  private List<Question> questions;
+
 }

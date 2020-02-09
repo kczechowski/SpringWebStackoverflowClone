@@ -1,13 +1,12 @@
 package com.kczechowski.stackclone.entities;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import java.util.List;
+import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 @Entity
@@ -31,10 +30,23 @@ public class Question implements Serializable {
   private String content;
 
   @Column(name = "created_at")
-  private Date createdAt;
+  private LocalDate createdAt;
 
   @Column(name = "updated_at")
-  private Integer updatedAt;
+  private LocalDate updatedAt;
 
+  @Column(name = "title")
+  private String title;
+
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(name = "questions_tags",
+          joinColumns = {@JoinColumn(name = "question_id", referencedColumnName = "id")},
+  inverseJoinColumns = {@JoinColumn(name = "tag_id", referencedColumnName = "id")})
+  @JsonIgnore
+  private List<Tag> tags;
+
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "user_id", insertable = false, updatable = false)
+  private User user;
   
 }

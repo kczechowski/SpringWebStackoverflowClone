@@ -9,10 +9,10 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Data;
 
-@Data
-@Table(name = "users")
 @Entity
-public class Users implements Serializable {
+@Data
+@Table(name = "users_roles")
+public class UserRole implements Serializable {
   private static final long serialVersionUID = 1L;
 
   @Id
@@ -20,11 +20,11 @@ public class Users implements Serializable {
   @Column(name = "id", insertable = false, nullable = false)
   private Integer id;
 
-  @Column(name = "nickname")
-  private String nickname;
+  @Column(name = "user_id")
+  private Integer userId;
 
-  @Column(name = "email")
-  private String email;
+  @Column(name = "type")
+  private String type;
 
   
 }

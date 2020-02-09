@@ -26,5 +26,5 @@ public class QuestionTag implements Serializable {
   @Column(name = "tag_id")
   private Integer tagId;
 
-  
+
 }
