@@ -48,5 +48,9 @@ public class Question implements Serializable {
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "user_id", insertable = false, updatable = false)
   private User user;
+
+  @OneToMany(fetch = FetchType.EAGER)
+  @JoinColumn(name = "question_id")
+  private List<Answer> answers;
   
 }

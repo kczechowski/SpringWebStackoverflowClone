@@ -1,9 +1,12 @@
 package com.kczechowski.stackclone.controllers;
 
+import com.kczechowski.stackclone.entities.Answer;
 import com.kczechowski.stackclone.entities.Question;
 import com.kczechowski.stackclone.entities.Tag;
 import com.kczechowski.stackclone.entities.User;
 import com.kczechowski.stackclone.entities.requests.AddQuestionRequest;
+import com.kczechowski.stackclone.exceptions.NotFoundException;
+import com.kczechowski.stackclone.repositories.AnswerRepository;
 import com.kczechowski.stackclone.repositories.QuestionRepository;
 import com.kczechowski.stackclone.repositories.TagRepository;
 import com.kczechowski.stackclone.repositories.UserRepository;
@@ -28,6 +31,9 @@ public class QuestionController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private AnswerRepository answerRepository;
 
     @GetMapping("/questions")
     List<Question> all() {
@@ -58,11 +64,22 @@ public class QuestionController {
         return questionRepository.save(question);
     }
 
+    @PostMapping("/questions/answers")
+    Answer newAnswer(@RequestBody Answer answer) {
+
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        User user = userRepository.findByNickname(securityContext.getAuthentication().getName());
+
+        answer.setUserId(user.getId());
+
+        return answerRepository.save(answer);
+    }
+
     @GetMapping("/questions/{id}")
     Question one(@PathVariable int id) {
 
         return questionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException());
+                .orElseThrow(() -> new NotFoundException());
     }
 
 

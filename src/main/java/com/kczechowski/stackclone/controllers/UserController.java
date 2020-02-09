@@ -2,6 +2,7 @@ package com.kczechowski.stackclone.controllers;
 
 import com.kczechowski.stackclone.entities.User;
 import com.kczechowski.stackclone.entities.UserRole;
+import com.kczechowski.stackclone.exceptions.NotFoundException;
 import com.kczechowski.stackclone.repositories.UserRepository;
 import com.kczechowski.stackclone.repositories.UserRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class UserController {
     User one(@PathVariable int id) {
 
         return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException());
+            .orElseThrow(() -> new NotFoundException());
     }
 
 
