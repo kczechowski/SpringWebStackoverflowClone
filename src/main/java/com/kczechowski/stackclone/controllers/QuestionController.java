@@ -11,6 +11,11 @@ import com.kczechowski.stackclone.repositories.QuestionRepository;
 import com.kczechowski.stackclone.repositories.TagRepository;
 import com.kczechowski.stackclone.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -36,8 +41,29 @@ public class QuestionController {
     private AnswerRepository answerRepository;
 
     @GetMapping("/questions")
-    List<Question> all() {
-        return questionRepository.findAll();
+    List<Question> all(
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "4") Integer items,
+            @RequestParam(defaultValue = "-1", required = false) Integer user_id,
+            @RequestParam(required = false) String phrase) {
+
+        Pageable paging = PageRequest.of(page, items, Sort.by("createdAt").descending());
+
+        Page<Question> pagedResult = null;
+
+        if (user_id > 0) {
+            pagedResult = questionRepository.findByUserIdMaxAnswers(user_id, paging);
+        } else if (phrase != null && !phrase.isEmpty()) {
+            pagedResult = questionRepository.findAllByContentContainingOrTitleContaining(phrase, phrase, paging);
+        } else {
+            pagedResult = questionRepository.findAll(paging);
+        }
+
+        if (pagedResult == null) {
+            return new ArrayList<Question>();
+        }
+
+        return pagedResult.getContent();
     }
 
     @PostMapping("/questions")
@@ -64,13 +90,18 @@ public class QuestionController {
         return questionRepository.save(question);
     }
 
-    @PostMapping("/questions/answers")
-    Answer newAnswer(@RequestBody Answer answer) {
+    @PostMapping("/questions/{id}/answers")
+    Answer newAnswer(@RequestBody Answer answer, @PathVariable int id) {
+
+        Question question = questionRepository.findById(id).orElseThrow(() -> new NotFoundException());
 
         SecurityContext securityContext = SecurityContextHolder.getContext();
         User user = userRepository.findByNickname(securityContext.getAuthentication().getName());
 
         answer.setUserId(user.getId());
+        answer.setQuestionId(question.getId());
+        answer.setCreatedAt(LocalDate.now());
+        answer.setUpdatedAt(LocalDate.now());
 
         return answerRepository.save(answer);
     }
@@ -94,6 +125,7 @@ public class QuestionController {
     }
 
     @DeleteMapping("/questions/{id}")
+    @Secured("ROLE_ADMIN")
     void deleteQuestion(@PathVariable int id) {
         questionRepository.deleteById(id);
     }

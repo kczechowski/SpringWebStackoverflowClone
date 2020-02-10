@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
@@ -27,6 +28,7 @@ public class Question implements Serializable {
   private Integer categoryId;
 
   @Column(name = "content")
+  @NotEmpty()
   private String content;
 
   @Column(name = "created_at")
@@ -36,6 +38,7 @@ public class Question implements Serializable {
   private LocalDate updatedAt;
 
   @Column(name = "title")
+  @NotEmpty()
   private String title;
 
   @ManyToMany(fetch = FetchType.LAZY)

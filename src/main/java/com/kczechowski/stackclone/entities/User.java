@@ -41,6 +41,10 @@ public class User implements Serializable {
   @JsonIgnore
   private List<Question> questions;
 
+  @OneToMany(mappedBy = "user")
+  @JsonIgnore
+  private List<Answer> answers;
+
   public void setPassword(String password) {
     this.password = PASSWORD_ENCODER.encode(password);
   }

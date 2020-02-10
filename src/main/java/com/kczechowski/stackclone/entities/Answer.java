@@ -1,13 +1,11 @@
 package com.kczechowski.stackclone.entities;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+
 import lombok.Data;
 
 @Table(name = "answers")
@@ -28,13 +26,18 @@ public class Answer implements Serializable {
   private Integer questionId;
 
   @Column(name = "content")
+  @NotEmpty()
   private String content;
 
   @Column(name = "created_at")
-  private Date createdAt;
+  private LocalDate createdAt;
 
   @Column(name = "updated_at")
-  private Date updatedAt;
+  private LocalDate updatedAt;
+
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "user_id", insertable = false, updatable = false)
+  private User user;
 
   
 }
